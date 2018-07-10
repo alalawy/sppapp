@@ -1,0 +1,210 @@
+{% extends "app/base.html" %} {% block style %}
+<!-- DataTables -->
+<link rel="stylesheet" href="{{ url_for('static', filename='bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Pembayaran
+            <small>Iuran</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li class="active">Pembayaran</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Pembayaran iuran</h3>
+                    </div>
+                    {{ success }}
+                    <form class="form-horizontal" action="/transaksi/bayar" method="POST">
+                        <div class="form-group">
+                            <label for="idSiswa" class="col-sm-2 control-label">Nomor Induk</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="idSiswa" placeholder="NIS" name="idSiswa" value=" " onclick="select()">
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-arrow-down"></i>Ambil Data</button>
+                        </div>
+                    </form>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Form Pembayaran</h4>
+                        </div>
+
+                        <form class="form-horizontal" action="{{ url_for('addbayar') }}" method="POST">
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div class="box box-success">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">Data</h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="tanggal" class="col-sm-3 control-label">Tanggal</label>
+                                                <div class="col-sm-8">
+                                                    <input type="date" class="form-control" id="tanggal" name="tanggal" required="required">
+                                                </div>
+                                            </div>
+                                            {% for siswa in siswa %}
+                                            <input type="hidden" value="{{ siswa.0 }}" name="idSiswa">
+                                            <div class="form-group">
+                                                <label for="nis" class="col-sm-3 control-label">NIS</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="nis" placeholder="Nomor Induk Siswa" name="nis" required="required" value="{{ siswa.1 }}"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nama" class="col-sm-3 control-label">Nama</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="nama" placeholder="Nama Siswa" name="nama" required="required" value="{{ siswa.2 }}"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="kelas" class="col-sm-3 control-label">Kelas</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="nama" placeholder="Nama Siswa" name="nama" required="required" value="{{ siswa.4 }}"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="kesanggupan" class="col-sm-3 control-label">Kesanggupan SPP</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="kesanggupan" placeholder="Kesanggupan SPP" name="nama" required="required" value="{{ siswa.9 }}"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="box box-success">
+                                        <div class="box-header with-border">
+                                            <h4 class="box-title">Detail Pembayaran</h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <label for="ortu" class="col-sm-3 control-label">Jenis Pemabayaran</label>
+                                                <div class="col-sm-8">
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" name="jenisBayar" value="1" onclick="hideKeterangan()">SPP</label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" name="jenisBayar" value="2" onclick="hideKeterangan()">Pembangunan</label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" name="jenisBayar" value="3" onclick="hideKeterangan()">Sarana & Prasarana</label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" name="jenisBayar" value="4" onclick="showKeterangan()">Lain-Lain</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                    <label for="keterangan" class="col-sm-3 control-label">keterangan</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="hidden" class="form-control" id="keterangan" placeholder="Keterangan" name="keterangan">
+                                                    </div>
+                                                </div>
+                                            <div class="form-group">
+                                                <label for="jumlahUang" class="col-sm-3 control-label">Jumlah Uang (Rp.)</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="jumlahUang" placeholder="Jumlah Uang" name="jumlahUang" required="required">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="diskon" class="col-sm-3 control-label">Subsidi (Rp.)</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="diskon" placeholder="Subsidi" name="diskon" required="required">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Bayar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+</div>
+</section>
+<!-- /.content -->
+</div>
+{% endblock %} {% block script %}
+
+<script>
+    var hargaBeli = document.getElementById('jumlahUang');
+    var hargaJual = document.getElementById('diskon');
+    hargaBeli.addEventListener('keyup', function (e) {
+        hargaBeli.value = formatRupiah(this.value, '');
+    });
+    hargaJual.addEventListener('keyup', function (e) {
+        hargaJual.value = formatRupiah(this.value, '');
+    });
+
+    /* Fungsi */
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+    }
+
+    function showKeterangan(){
+        document.getElementById('keterangan').setAttribute("type","text");
+    }
+    function hideKeterangan(){
+        document.getElementById('keterangan').setAttribute("type","hidden");
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Ej0hUpn6wbrOTJtRExp8jvboBagaz+Or6E9zzWT+gHCQuuZQQVZUcbmhXQzSG17s"
+    crossorigin="anonymous">
+<style>
+    td,
+    th {
+        border: 1px solid rgb(182, 182, 182);
+    }
+</style>
+
+<body>
+    <div class="w3-container">
+        <center>
+            <h3>Data Kesanggupan Iuran Siswa SDIT Al-irsyad Al-Islamiyah</h3>
+        </center>
+        <br>
+        <table class="w3-table-all">
+            <thead>
+                <tr class="w3-green">
+                    <th>NIS</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>Kelas</th>
+                    <th>TTL</th>
+                    <th>Nama Orang Tua</th>
+                    <th>No HP</th>
+                    <th>Kesanggupan SPP</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            {% for siswa in siswa %}
+            <tr>
+                <td>{{ siswa.1 }}</td>
+                <td>
+                    {{ siswa.2 }}
+                </td>
+                <td>{{ siswa.3 }}</td>
+                <td>{{ siswa.4 }}</td>
+                <td>{{ siswa.5 }}, {{ siswa.6 }}</td>
+                <td>{{ siswa.7 }}</td>
+                <td>{{ siswa.8 }}</td>
+                <td>{{ rupiah(siswa.9) }}</td>
+                <td>{{ siswa.10 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js"></script>
+
+<script>
+    JsBarcode(".barcode").init();
+</script>
+
+</html>

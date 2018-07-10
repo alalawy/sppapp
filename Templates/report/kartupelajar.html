@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Ej0hUpn6wbrOTJtRExp8jvboBagaz+Or6E9zzWT+gHCQuuZQQVZUcbmhXQzSG17s"
+    crossorigin="anonymous">
+
+<body>
+    <div class="w3-container">
+        {% for siswa in siswa %}
+        <div class="col-xs-6">
+            <header class="w3-container w3-green">
+                <center>
+                    <h3>KARTU IURAN DAN TABUNGAN</h3>
+                    <p>TK & SDIT AL-IRSYAD AL-ISLAMIYAH RAKAM</p>
+                </center>
+            </header>
+
+            <div class="w3-container">
+                <center>
+                    <img src="http://alphacsoft.com/images/alirsyad.jpg" class="" width="110">
+                </center>
+                <hr>
+                <svg class="barcode w3-left w3-circle w3-margin-right" jsbarcode-format="code128" jsbarcode-value="{{ siswa.1 }}" jsbarcode-textmargin="0"
+                    jsbarcode-height="30">
+                </svg>
+
+                <p>Nama : {{ siswa.2 }}</p>
+                <p>Kelas : {{ siswa.4 }}</p>
+                <br>
+            </div>
+            <br>
+            <button class="w3-button w3-block w3-dark-grey"></button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js"></script>
+
+<script>
+    JsBarcode(".barcode").init();
+</script>
+
+</html>

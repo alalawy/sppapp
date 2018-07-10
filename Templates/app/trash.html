@@ -1,0 +1,146 @@
+{% extends "app/base.html" %} {% block style %}
+<!-- DataTables -->
+<link rel="stylesheet" href="{{ url_for('static', filename='bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Data
+            <small>Data Sampah</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li class="active">Recycle Bin</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Custom Tabs (Pulled to the right) -->
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs pull-right">
+                        <li class="active">
+                            <a href="#tab_1-1" data-toggle="tab">Data Siswa</a>
+                        </li>
+                        <li>
+                            <a href="#tab_2-2" data-toggle="tab">Data SPP</a>
+                        </li>
+                        <li>
+                            <a href="#tab_3-2" data-toggle="tab">Data Iuran</a>
+                        </li>
+                        <li>
+                            <a href="#tab_3-2" data-toggle="tab">Data Tabungan</a>
+                        </li>
+                        <li class="pull-left header">
+                            <i class="fa fa-trash"></i> Recycle Bin</li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1-1">
+                            <div class="box-body">
+                                <table id="example1" class="table table-bordered table-striped" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Pick</th>
+                                            <th>NIS</th>
+                                            <th>Nama</th>
+                                            <th>Alamat</th>
+                                            <th>Kelas</th>
+                                            <th>TTL</th>
+                                            <th>Nama Orang Tua</th>
+                                            <th>No HP</th>
+                                            <th>Username</th>
+                                            <th>Password</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for siswa in siswa %}
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label>
+                                                        <input type="radio" class="minimal" name="click" value="{{ siswa.0 }}">
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>{{ siswa.1 }}</td>
+                                            <td>
+                                                {{ siswa.2 }}
+                                            </td>
+                                            <td>{{ siswa.3 }}</td>
+                                            <td>{{ siswa.4 }}</td>
+                                            <td>{{ siswa.5 }}</td>
+                                            <td>{{ siswa.6 }}</td>
+                                            <td>{{ siswa.7 }}</td>
+                                            <td>{{ siswa.8 }}</td>
+                                            <td>{{ siswa.9 }}</td>
+                                            <td>
+                                                <center>
+                                                    <a class="btn btn-success" href="/restore/siswa/{{ siswa.0 }}" onclick="return confirm('Yakin Ingin Mengembalikan Data {{ siswa.2 }} ?')">
+                                                        <i class="fa fa-undo"></i>
+                                                    </a>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="tab_2-2">
+                            <div class="box-body">
+                                <table id="example1" class="table table-bordered table-striped">
+
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- nav-tabs-custom -->
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %} {% block script %}
+
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='bower_components/datatables.net/js/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ url_for('static', filename='dist/js/adminlte.min.js') }}"></script>
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable({
+            "scrollY": 400,
+            "scrollX": true
+        })
+    })
+</script>
+
+{% endblock %}
