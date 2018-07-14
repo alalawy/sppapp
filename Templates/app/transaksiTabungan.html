@@ -1,0 +1,152 @@
+{% extends "app/base.html" %} {% block style %}
+<!-- DataTables -->
+<link rel="stylesheet" href="{{ url_for('static', filename='bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+{% endblock %} {% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Transaksi
+            <small>Transaksi Tabungan</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li class="active">Transaksi Tabungan</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Transaksi Tabungan</h3>
+                    </div>
+                    {{ success }}
+                    <div style="margin-left: 10px">
+                        <table>
+                            <tr>
+                                <td>
+                                    <form action="/transaksi/setor" method="POST">
+                                        <input type="hidden" name="idSiswa" value=" ">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fa fa-money"></i> Setor Tabungan</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="/transaksi/tarik" method="POST" style="margin-left: 5px">
+                                        <input type="hidden" name="idSiswa" value=" ">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fa fa-money"></i> Tarik Tabungan</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example1" class="table table-bordered table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Pick</th>
+                                    <th>Tanggal</th>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Setor</th>
+                                    <th>Tarik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tabung in tabung %}
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <label>
+                                                <input type="radio" class="minimal" name="click" value="{{ tabung.0 }}">
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>{{ tabung.1 }}</td>
+                                    <td>{{ tabung.2 }}</td>
+                                    <td>{{ tabung.3 }}</td>
+                                    <td>{{ rupiah(tabung.4) }}</td>
+                                    <td>{{ rupiah(tabung.5) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+{% endblock %} {% block script %}
+
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='bower_components/datatables.net/js/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ url_for('static', filename='dist/js/adminlte.min.js') }}"></script>
+<!-- page script -->
+<script>
+    $(function () {
+        $('#example1').DataTable({
+            "scrollY": 400,
+            "scrollX": true
+        })
+    })
+</script>
+<script>
+    var hargaBeli = document.getElementById('hargaBeli');
+    var hargaJual = document.getElementById('hargaJual');
+    hargaBeli.addEventListener('keyup', function (e) {
+        hargaBeli.value = formatRupiah(this.value, '');
+    });
+    hargaJual.addEventListener('keyup', function (e) {
+        hargaJual.value = formatRupiah(this.value, '');
+    });
+
+    /* Fungsi */
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+    }
+</script>
+
+{% endblock %}

@@ -219,12 +219,12 @@
                                                         </form>
                                                     </td>
                                                     <td>
-                                                        <a class="btn btn-danger" href="/hapus/siswa/{{ siswa.0 }}" onclick="return confirm('Yakin Ingin Menghpus Data {{ siswa.2 }} ?')">
+                                                        <a style="margin-left: 5px" class="btn btn-danger" href="/hapus/siswa/{{ siswa.0 }}" onclick="return confirm('Yakin Ingin Menghpus Data {{ siswa.2 }} ?')">
                                                             <i class="fa fa-trash"></i>
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <form action="/transaksi/bayar" method="POST">
+                                                        <form style="margin-left:5px" action="/transaksi/bayar" method="POST">
                                                             <input type="hidden" value="{{ siswa.1 }}" name="idSiswa">
                                                             <button type="submit" class="btn btn-success">
                                                                 <i class="fa fa-money"></i>

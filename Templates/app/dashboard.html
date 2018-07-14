@@ -42,9 +42,11 @@
         <!-- small box -->
         <div class="small-box bg-green">
           <div class="inner">
-            <h3>53
+            {% for total in total %}
+            <h3>{{ "%0.1f" % (total.0)}}
               <sup style="font-size: 20px">%</sup>
             </h3>
+            {% endfor %}
 
             <p>SPP Terbayar</p>
           </div>
@@ -61,12 +63,14 @@
         <!-- small box -->
         <div class="small-box bg-yellow">
           <div class="inner">
-            <h3>44</h3>
+            {% for tabung in tabung %}
+            <h3>{{ rupiah(tabung.0) }}</h3>
+            {% endfor %}
 
-            <p>User Registrations</p>
+            <p>Total Seluruh Tabungan</p>
           </div>
           <div class="icon">
-            <i class="ion ion-person-add"></i>
+            <i class="ion ion-cash"></i>
           </div>
           <a href="#" class="small-box-footer">Lebih Lanjut
             <i class="fa fa-arrow-circle-right"></i>
@@ -87,9 +91,6 @@
           <ul class="nav nav-tabs pull-right">
             <li class="active">
               <a href="#revenue-chart" data-toggle="tab">Area</a>
-            </li>
-            <li>
-              <a href="#sales-chart" data-toggle="tab">Donut</a>
             </li>
             <li class="pull-left header">
               <i class="fa fa-inbox"></i> Diagram Pembayaran</li>

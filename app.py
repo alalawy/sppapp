@@ -25,11 +25,28 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
+    def formatrupiah(uang):
+        y = str(uang)
+        if len(y) <= 3 :
+            return 'Rp. ' + y     
+        else :
+            p = y[-3:]
+            q = y[:-3]
+            return   formatrupiah(q) + '.' + p
+
     cur = mysql.connection.cursor()
     cur.execute("SELECT COUNT(id) FROM siswa WHERE status LIKE '1'")
     rv = cur.fetchall()
 
-    return render_template('app/dashboard.html', siswacount=rv)
+    cur2 = mysql.connection.cursor()
+    cur2.execute("SELECT ((SELECT SUM(jumlah_bayar) FROM iuranlog WHERE jenis_bayar LIKE '1' AND status LIKE '1')/((SELECT SUM(kesanggupan) FROM siswa WHERE status LIKE '1')*12))*100 AS total")
+    rv2 = cur2.fetchall()
+
+    cur3 = mysql.connection.cursor()
+    cur3.execute("SELECT SUM(tabung_in)-SUM(tabung_out) FROM tabunganlog WHERE status LIKE '1'")
+    rv3 = cur3.fetchall()
+
+    return render_template('app/dashboard.html', siswacount=rv, total=rv2, tabung=rv3, rupiah=formatrupiah)
 
 @app.route('/data/siswa')
 def datasiswa():
@@ -71,10 +88,27 @@ def dataiuran():
             return   formatrupiah(q) + '.' + p
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT nis,nama,kelas,((SELECT jumlah FROM jenisiuran WHERE id LIKE '1')*12)-(((SELECT jumlah FROM jenisiuran WHERE id LIKE '1')-(kesanggupan))*12)-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '1'),((SELECT jumlah FROM jenisiuran WHERE id LIKE '2'))-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '2'),((SELECT jumlah FROM jenisiuran WHERE id LIKE '3'))-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '3') FROM siswa WHERE status LIKE '1'")
+    cur.execute("SELECT nis,nama,kelas,(SELECT kesanggupan * 12)-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '1'),((SELECT jumlah FROM jenisiuran WHERE id LIKE '2'))-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '2'),((SELECT jumlah FROM jenisiuran WHERE id LIKE '3'))-(SELECT SUM(jumlah_bayar) FROM iuranlog WHERE id_siswa LIKE siswa.id AND jenis_bayar LIKE '3') FROM siswa WHERE status LIKE '1'")
     rv = cur.fetchall()
 
     return render_template('app/dataIuran.html', siswa=rv, rupiah=formatrupiah)
+
+@app.route('/data/tabungan')
+def datatabungan():
+    def formatrupiah(uang):
+        y = str(uang)
+        if len(y) <= 3 :
+            return 'Rp. ' + y     
+        else :
+            p = y[-3:]
+            q = y[:-3]
+            return   formatrupiah(q) + '.' + p
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT nis,nama,kelas,((SELECT SUM(tabung_in) FROM tabunganlog WHERE id_siswa LIKE siswa.id)-(SELECT SUM(tabung_out) FROM tabunganlog WHERE id_siswa LIKE siswa.id)) FROM siswa WHERE status LIKE '1'")
+    rv = cur.fetchall()
+
+    return render_template('app/dataTabungan.html', siswa=rv, rupiah=formatrupiah)
 
 @app.route('/transaksi/iuran')
 def transaksiiuran():
@@ -92,6 +126,23 @@ def transaksiiuran():
     rv = cur.fetchall()
 
     return render_template('app/transaksiIuran.html', iuran=rv, rupiah=formatrupiah)
+
+@app.route('/transaksi/tabungan')
+def transaksitabungan():
+    def formatrupiah(uang):
+        y = str(uang)
+        if len(y) <= 3 :
+            return 'Rp. ' + y     
+        else :
+            p = y[-3:]
+            q = y[:-3]
+            return   formatrupiah(q) + '.' + p
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id,tanggal,(SELECT nama FROM siswa WHERE id LIKE tabunganlog.id_siswa),(SELECT kelas FROM siswa WHERE id LIKE tabunganlog.id_siswa),tabung_in,tabung_out FROM tabunganlog WHERE status LIKE '1' ORDER BY id DESC")
+    rv = cur.fetchall()
+
+    return render_template('app/transaksiTabungan.html', tabung=rv, rupiah=formatrupiah)
 
 @app.route('/data/trash')
 def datasiswatrash():
@@ -111,6 +162,28 @@ def bayar():
     cur.close()
 
     return render_template('app/bayarIuran.html', siswa=rv)
+
+@app.route('/transaksi/setor', methods=["POST"])
+def setor():
+    idSiswa = request.form['idSiswa'] or ""
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM siswa WHERE nis LIKE '%"+idSiswa+"%' AND status LIKE '1'")
+    rv = cur.fetchall()
+    cur.close()
+
+    return render_template('app/bayarTabungan.html', siswa=rv)
+
+@app.route('/transaksi/tarik', methods=["POST"])
+def tarik():
+    idSiswa = request.form['idSiswa'] or ""
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM siswa WHERE nis LIKE '%"+idSiswa+"%' AND status LIKE '1'")
+    rv = cur.fetchall()
+    cur.close()
+
+    return render_template('app/tarikTabungan.html', siswa=rv)
 
 @app.route('/edit/siswa', methods=["POST"])
 def editsiswa():
@@ -170,12 +243,44 @@ def addbayar():
     jenisBayar = request.form['jenisBayar'] or ""
     jumlahUang = re.sub(r'\D', "", request.form['jumlahUang'] or "")
     diskon = re.sub(r'\D', "", request.form['diskon'] or "")
-    keterangan = request.form['keterangan'] or ""
+    dari = request.form['dari']
+    sampai =  request.form['sampai']
+
+    bulanArr = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    bulan = ""
+    for i in range(int(dari), int(sampai)+1):
+        bulan = bulan + bulanArr[i] + ", "
+
+    
+    keterangan = request.form['keterangan'] + str(bulan)
 
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO iuranlog (tanggal,id_siswa,jenis_bayar,jumlah_bayar,diskon,keterangan,status) VALUES (%s, %s, %s, %s, %s, %s, '1')", (tanggal, idSiswa, jenisBayar, jumlahUang, diskon,keterangan))
     mysql.connection.commit()
     return redirect(url_for('transaksiiuran'))
+
+
+@app.route('/add/setor', methods=["POST"])
+def addsetor():
+    tanggal = request.form['tanggal'] or ""
+    idSiswa = request.form['idSiswa'] or ""
+    jumlahUang = re.sub(r'\D', "", request.form['jumlahUang'] or "")
+
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO tabunganlog (tanggal,id_siswa,tabung_in,status) VALUES (%s, %s, %s, '1')", (tanggal, idSiswa, jumlahUang,))
+    mysql.connection.commit()
+    return redirect(url_for('transaksitabungan'))
+
+@app.route('/add/tarik', methods=["POST"])
+def addtarik():
+    tanggal = request.form['tanggal'] or ""
+    idSiswa = request.form['idSiswa'] or ""
+    jumlahUang = re.sub(r'\D', "", request.form['jumlahUang'] or "")
+
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO tabunganlog (tanggal,id_siswa,tabung_out,status) VALUES (%s, %s, %s, '1')", (tanggal, idSiswa, jumlahUang,))
+    mysql.connection.commit()
+    return redirect(url_for('transaksitabungan'))
 
 #Delete Data
 @app.route('/hapus/siswa/<string:id_data>', methods=["GET"])
@@ -266,6 +371,35 @@ def reportsiswa():
     rv2 = cur2.fetchall()
 
     rendered = render_template('report/dataSiswa.html', siswa=rv, kelas=rv2, rupiah=formatrupiah)
+    pdf = pdfkit.from_string(rendered, False)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=datasiswa.pdf'
+
+    return response
+
+@app.route('/report/kwitansi')
+def reportkwitansi():
+    def formatrupiah(uang):
+        y = str(uang)
+        if len(y) <= 3 :
+            return 'Rp. ' + y     
+        else :
+            p = y[-3:]
+            q = y[:-3]
+            return   formatrupiah(q) + '.' + p
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM siswa WHERE status LIKE '1' and id LIKE '6'")
+    rv = cur.fetchall()
+    cur2 = mysql.connection.cursor()
+    cur2.execute("SELECT * FROM kelas WHERE status LIKE '1' and id LIKE '6'")
+    rv2 = cur2.fetchall()
+
+    now = str(datetime.now())
+
+    rendered = render_template('report/kwitansi.html', siswa=rv, kelas=rv2, rupiah=formatrupiah, tanggal=now, namaBendahara="Ahmad Mugni, S.E.I")
     pdf = pdfkit.from_string(rendered, False)
 
     response = make_response(pdf)
