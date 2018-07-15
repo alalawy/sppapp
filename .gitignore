@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 *.js
 *.css
 */static/*
 static/*
+=======
+*.js
+*.css
+*/static/*
+static/*
+>>>>>>> 1144a12a7d5fc378888ebb61235916af59cfa191
