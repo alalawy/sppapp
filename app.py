@@ -379,7 +379,7 @@ def reportsiswa():
 
     return response
 
-@app.route('/report/kwitansi')
+@app.route('/report/kwitansi', methods=['POST'])
 def reportkwitansi():
     def formatrupiah(uang):
         y = str(uang)
@@ -389,22 +389,20 @@ def reportkwitansi():
             p = y[-3:]
             q = y[:-3]
             return   formatrupiah(q) + '.' + p
-    
+
+    id = request.form['id_iuran'] or ""
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM siswa WHERE status LIKE '1' and id LIKE '6'")
+    cur.execute("SELECT tanggal,(SELECT nama FROM siswa WHERE id LIKE iuranlog.id_siswa),(SELECT nama FROM jenisiuran WHERE id LIKE iuranlog.jenis_bayar),jumlah_bayar,diskon,keterangan FROM iuranlog WHERE status LIKE '1' and id LIKE %s", (id,))
     rv = cur.fetchall()
-    cur2 = mysql.connection.cursor()
-    cur2.execute("SELECT * FROM kelas WHERE status LIKE '1' and id LIKE '6'")
-    rv2 = cur2.fetchall()
 
     now = str(datetime.now())
 
-    rendered = render_template('report/kwitansi.html', siswa=rv, kelas=rv2, rupiah=formatrupiah, tanggal=now, namaBendahara="Ahmad Mugni, S.E.I")
+    rendered = render_template('report/kwitansi.html', siswa=rv, rupiah=formatrupiah, tanggal=now, namaBendahara="Ahmad Mugni, S.E.I")
     pdf = pdfkit.from_string(rendered, False)
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'inline; filename=datasiswa.pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=kwitansi-iuran.pdf'
 
     return response
 

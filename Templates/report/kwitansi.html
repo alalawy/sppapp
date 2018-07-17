@@ -39,17 +39,17 @@
                                     <tr>
                                         <td><b>Sudah Terima Dari</b></td>
                                         <td style="padding-left: 20px; padding-right: 20px; padding-bottom: 10px;">:</td>
-                                        <td style="padding-left: 20px; border: 1px solid black; width: 75%;">{{ siswa.0 }}</td>
+                                        <td style="padding-left: 20px; border: 1px solid black; width: 75%;">{{ siswa.1 }}</td>
                                     </tr>
                                     <tr>
                                         <td><b>Banyaknya uang</b></td>
                                         <td style="padding-left: 20px; padding-right: 20px; padding-bottom: 10px;">:</td>
-                                        <td style="padding-left: 20px;border: 1px solid black">{{ siswa.1 }}</td>
+                                        <td style="padding-left: 20px;border: 1px solid black">{{ rupiah(siswa.3) }}</td>
                                     </tr>
                                     <tr>
                                         <td><b>Untuk Pembayaran</b></td>
                                         <td style="padding-left: 20px; padding-right: 20px; padding-bottom: 10px;">:</td>
-                                        <td style="padding-left: 20px;border: 1px solid black">{{ siswa.2 }}</td>
+                                        <td style="padding-left: 20px;border: 1px solid black">{{ siswa.2 }} - {{ siswa.5 }}</td>
                                     </tr>
                                 </table>
                             </center>
@@ -58,7 +58,7 @@
                                 <div class="col-xs-8"></div>
                                 <div class="col-xs-4">
                                     <center>
-                                        <p>Rakam , {{ tanggal }}</p>
+                                        <p>Rakam , {{ siswa.0 }}</p>
                                         <br>
                                         <br>
                                         <p>

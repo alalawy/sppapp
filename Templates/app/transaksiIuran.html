@@ -61,6 +61,7 @@
                                     <th>Jenis Pembayaran</th>
                                     <th>Jumlah Pembayaran</th>
                                     <th>Subsidi</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,6 +80,12 @@
                                     <td>{{ iuran.4 }} - {{ iuran.7 }}</td>
                                     <td>{{ rupiah(iuran.5) }}</td>
                                     <td>{{ rupiah(iuran.6) }}</td>
+                                    <td>
+                                        <form action="/report/kwitansi" method="POST">
+                                            <input type="hidden" value="{{ iuran.0 }}" name="id_iuran">
+                                            <button type="submit" class="btn btn-success"><span class="fa fa-newspaper-o"></span></button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
