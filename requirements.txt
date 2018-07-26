@@ -2,3 +2,5 @@ flask
 flask-mysqldb
 pdfkit
 passlib
+pandas
+xlrd

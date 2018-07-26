@@ -4,7 +4,8 @@ from flask_mysqldb import MySQL
 import re
 from passlib.hash import sha256_crypt
 import pdfkit
-
+import pandas as pd
+from werkzeug import secure_filename
 
 app = Flask(__name__)
 
@@ -224,7 +225,7 @@ def addsiswa():
     password256 = sha256_crypt.encrypt(password)
     timestamp = str(datetime.now())
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO siswa (nis,nama,alamat,kelas,tempat_lahir,tanggal_lahir,nama_ortu,no_hp,kesanggupan,username,password,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'1')", (nis,nama,alamat,kelas,tempatLahir,tanggalLahir,ortu,nohp,kesanggupan,username,password256,))
+    cur.execute("INSERT INTO siswa (nis,nama,alamat,kelas,tempat_lahir,tanggal_lahir,nama_ortu,no_hp,kesanggupan,username,password,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'1')", (nis,nama,alamat,kelas,tempatLahir,tanggalLahir,ortu,nohp,kesanggupan,username,password,))
     mysql.connection.commit()
     return redirect(url_for('datasiswa'))
 
@@ -282,6 +283,33 @@ def addtarik():
     mysql.connection.commit()
     return redirect(url_for('transaksitabungan'))
 
+@app.route('/add/siswa/import', methods=["GET","POST"])
+def importsiswa():
+
+    fileExcel = request.files['fileexcel']
+    fileExcel.save(secure_filename(fileExcel.filename))
+
+    DataFrame = pd.read_excel(fileExcel.filename, sheet_name=0)
+
+    for i in range(0, len(DataFrame)):
+        nis = DataFrame['NIS'][i]
+        nama = DataFrame['NAMA'][i]
+        alamat = DataFrame['ALAMAT'][i]
+        kelas = DataFrame['KELAS'][i]
+        tempatLahir = DataFrame['TEMPAT LAHIR'][i]
+        tanggalLahir = DataFrame['TANGGAL LAHIR'][i]
+        ortu = DataFrame['NAMA ORANG TUA'][i]
+        nohp = DataFrame['NOMOR HP ORTU'][i]
+        kesanggupan = DataFrame['KESANGGUPAN SPP'][i]
+        username = DataFrame['USERNAME'][i]
+        password = DataFrame['PASSWORD'][i]
+        timestamp = str(datetime.now())
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO siswa (nis,nama,alamat,kelas,tempat_lahir,tanggal_lahir,nama_ortu,no_hp,kesanggupan,username,password,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'1')", (nis,nama,alamat,kelas,tempatLahir,tanggalLahir,ortu,nohp,kesanggupan,username,password,))
+        mysql.connection.commit()
+
+    return redirect(url_for('datasiswa'))
+
 #Delete Data
 @app.route('/hapus/siswa/<string:id_data>', methods=["GET"])
 def hapusbarang(id_data):
@@ -330,7 +358,7 @@ def updatesiswa():
     password256 = sha256_crypt.encrypt(password)
     timestamp = str(datetime.now())
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO siswa (nis,nama,alamat,kelas,tempat_lahir,tanggal_lahir,nama_ortu,no_hp,kesanggupan,username,password,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'1')", (nis,nama,alamat,kelas,tempatLahir,tanggalLahir,ortu,nohp,kesanggupan,username,password256,))
+    cur.execute("INSERT INTO siswa (nis,nama,alamat,kelas,tempat_lahir,tanggal_lahir,nama_ortu,no_hp,kesanggupan,username,password,status) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'1')", (nis,nama,alamat,kelas,tempatLahir,tanggalLahir,ortu,nohp,kesanggupan,username,password,))
     mysql.connection.commit()
     return redirect(url_for('datasiswa'))
 
