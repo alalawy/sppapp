@@ -158,7 +158,7 @@ def bayar():
     idSiswa = request.form['idSiswa'] or ""
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM siswa WHERE nis LIKE '%"+idSiswa+"%' AND status LIKE '1'")
+    cur.execute("SELECT * FROM siswa WHERE nis LIKE '"+idSiswa+"' AND status LIKE '1'")
     rv = cur.fetchall()
     cur.close()
 
@@ -169,7 +169,7 @@ def setor():
     idSiswa = request.form['idSiswa'] or ""
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM siswa WHERE nis LIKE '%"+idSiswa+"%' AND status LIKE '1'")
+    cur.execute("SELECT * FROM siswa WHERE nis LIKE '"+idSiswa+"' AND status LIKE '1'")
     rv = cur.fetchall()
     cur.close()
 
