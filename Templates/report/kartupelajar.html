@@ -7,7 +7,7 @@
 <body>
     <div class="w3-container">
         {% for siswa in siswa %}
-        <div class="col-xs-6">
+        <div class="col-xs-6" style="width: 420px; height: 327px; overflow: hidden;">
             <header class="w3-container w3-green">
                 <center>
                     <h3>KARTU IURAN DAN TABUNGAN</h3>
@@ -23,13 +23,14 @@
                 <svg class="barcode w3-left w3-circle w3-margin-right" jsbarcode-format="code128" jsbarcode-value="{{ siswa.1 }}" jsbarcode-textmargin="0"
                     jsbarcode-height="30">
                 </svg>
-
-                <p>Nama : {{ siswa.2 }}</p>
+                <div style="height: 40px;">
+                    <p>Nama : {{ siswa.2 }}</p>
+                </div>
                 <p>Kelas : {{ siswa.4 }}</p>
                 <br>
             </div>
             <br>
-            <button class="w3-button w3-block w3-dark-grey"></button>
+            <button class="w3-button w3-block w3-dark-grey" style="height: 20px;"></button>
         </div>
         {% endfor %}
     </div>
